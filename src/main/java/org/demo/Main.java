@@ -25,10 +25,10 @@ public class Main {
 
     record URLData (URL url, byte[] response) { }
 
-    List<URLData> retrieveURLs(URL... urls) throws Exception {
+    List<URLData> retrieveURLs(URL... urls) {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             var tasks = Arrays.stream(urls)
-                    .map(url -> executor.submit(() -> getURL(url)))
+                    .map(url -> executor.submit(() -> fetchUrlData(url)))
                     .toList();
             return tasks.stream().map(this::fromFuture)
                     .map(s -> s instanceof IResult.Success<URLData> d ? d.data : null)
@@ -42,14 +42,17 @@ public class Main {
             IResult<URLData> result = future.get();
             return switch(result) {
                 case IResult.Success<URLData> s -> s;
-                case IResult.Failed<URLData> f -> f;
+                case IResult.Failed<URLData> f -> {
+                    System.out.println("failed %s".formatted(f.exception.getMessage()));
+                    yield f;
+                }
             };
         } catch (InterruptedException | ExecutionException e) {
             return new IResult.Failed<>(e);
         }
     }
 
-    IResult<URLData> getURL(URL url) {
+    IResult<URLData> fetchUrlData(URL url) {
         try (InputStream in = url.openStream()) {
             try {
                 return new IResult.Success<>(new URLData(url, in.readAllBytes()));
