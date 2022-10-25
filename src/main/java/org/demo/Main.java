@@ -42,8 +42,8 @@ public class Main {
             IResult<URLData> result = future.get();
             return switch(result) {
                 case IResult.Success<URLData> s -> s;
-                case IResult.Failed<URLData>(Exception e) -> {
-                    System.out.println("failed %s".formatted(e.getMessage()));
+                case IResult.Failed<URLData> f -> {
+                    System.out.println("failed %s".formatted(f.exception.getMessage()));
                     yield f;
                 }
             };
