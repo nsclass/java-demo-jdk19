@@ -66,9 +66,10 @@ public class Main {
         }
     }
     public static void main(String[] args) throws Exception {
-        List<URL> urls = Stream.of("https://www.google.com",
-                "https://www.yahoo.com",
-                "https://www.youtube.com")
+        List<URL> urls = Stream.of(
+                    "https://www.google.com",
+                    "https://www.yahoo.com",
+                    "https://www.youtube.com")
                 .map(url -> {
                     try {
                         return new URL(url);
@@ -81,7 +82,7 @@ public class Main {
         result.forEach(data -> System.out.printf("""
                 url: %s,
                 data: %d
-                %n""", data.url, new String(data.response).length()));
+                %n""", data.url, data.response.length));
 
     }
 }
