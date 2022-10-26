@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -98,7 +99,7 @@ public class Main {
 
         List<URLData> result = new Main().retrieveURLs(urls);
         result.stream()
-            .sorted((x, y) -> Long.compare(x.durationMs, y.durationMs))
+            .sorted(Comparator.comparingLong(x -> x.durationMs))
             .forEach(data ->
                 System.out.printf("""
                     %s, %d(ms) %d(KB)
