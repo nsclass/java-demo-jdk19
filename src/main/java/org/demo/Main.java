@@ -2,13 +2,14 @@ package org.demo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 /**
  * Date ${DATE}
@@ -25,9 +26,10 @@ public class Main {
 
     record URLData (URL url, byte[] response) { }
 
-    List<URLData> retrieveURLs(URL... urls) {
+    List<URLData> retrieveURLs(List<URL> urls) {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            var tasks = Arrays.stream(urls)
+            var tasks = urls
+                    .stream()
                     .map(url -> executor.submit(() -> fetchUrlData(url)))
                     .toList();
             return tasks.stream().map(this::fromFuture)
@@ -64,12 +66,22 @@ public class Main {
         }
     }
     public static void main(String[] args) throws Exception {
+        List<URL> urls = Stream.of("https://www.google.com",
+                "https://www.yahoo.com",
+                "https://www.youtube.com")
+                .map(url -> {
+                    try {
+                        return new URL(url);
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).toList();
 
-        List<URLData> result = new Main().retrieveURLs(new URL("https://www.google.com"));
+        List<URLData> result = new Main().retrieveURLs(urls);
         result.forEach(data -> System.out.printf("""
                 url: %s,
-                data: %s
-                %n""", data.url, new String(data.response)));
+                data: %d
+                %n""", data.url, new String(data.response).length()));
 
     }
 }
