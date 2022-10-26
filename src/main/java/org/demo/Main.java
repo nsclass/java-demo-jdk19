@@ -74,6 +74,24 @@ public class Main {
         }
     }
 
+    static String toJson(List<URLData> result) {
+        var list = result.stream()
+                .sorted(Comparator.comparingLong(x -> x.durationMs))
+                .map(data ->
+                        """
+                        {
+                            "url": "%s",
+                            "duration:: "%d(ms)",
+                            "size": "%d(KB)"
+                        }""".formatted(data.url, data.durationMs, data.response.length / 1024))
+                .toList();
+
+        return """
+                 [
+                   %s
+                 ]""".formatted(String.join(",", list));
+    }
+
     public static void main(String[] args) {
         List<URL> urls = Stream.of(
                     "https://www.google.com",
@@ -99,14 +117,6 @@ public class Main {
                 }).toList();
 
         List<URLData> result = new Main().retrieveURLs(urls);
-        result.stream()
-            .sorted(Comparator.comparingLong(x -> x.durationMs))
-            .forEach(data ->
-                System.out.printf("""
-                    %s, %d(ms) %d(KB)
-                    """, data.url,
-                    data.durationMs,
-                    data.response.length / 1024));
-
+        System.out.println(toJson(result));
     }
 }
