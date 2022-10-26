@@ -33,7 +33,7 @@ public class Main {
                     .map(url -> executor.submit(() -> fetchUrlData(url)))
                     .toList();
             return tasks.stream().map(this::fromFuture)
-                    .map(s -> s instanceof IResult.Success<URLData> d ? d.data : null)
+                    .map(s -> s instanceof IResult.Success<URLData>(URLData d) ? d : null)
                     .filter(Objects::nonNull)
                     .toList();
         }
