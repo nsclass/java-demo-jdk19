@@ -84,6 +84,7 @@ public class Main {
                         "https://www.amazon.com",
                         "https://www.bing.com",
                         "https://www.reddit.com",
+                        "https://www.mozilla.org",
                         "https://www.facebook.com",
                         "https://www.ebay.com",
                         "https://www.twitter.com",
